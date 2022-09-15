@@ -20,23 +20,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var textList = ["", "", "", "", "", "", "", "", ""];
-  bool player = true; //player1=true ,player2=false
-  int countOnTap = 0;
-  String winner = "";
+  var textList = ["", "", "", "", "", "", "", "", ""];  //九宮格
+  bool player = true;   //player「O」=true , player「X」=false
+  int countOnTap = 0;   //計算點選次數
+  String winner = "";   //贏家
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
           title: const Center(
             child: Text(
               "  OO   Vs   XX",
@@ -44,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           actions: <Widget>[
+            //重新開始
             IconButton(
               icon: const Icon(Icons.settings_backup_restore),
               onPressed: () {
@@ -55,11 +48,15 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ]),
       body: Column(
-        children: <Widget>[_turnTo(), _ticTacToe(), _whoWin()],
+        children: <Widget>[
+          _turnTo(),
+          _ticTacToe(),
+          _whoWin()],
       ),
     );
   }
 
+  //顯示輪到誰
   Widget _turnTo() {
     return Expanded(
       child: Center(
@@ -71,31 +68,32 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  //顯示九宮格
   Widget _ticTacToe() {
     return Expanded(
       flex: 3,
       child: Padding(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3, //每行三列
-            childAspectRatio: 1.0, //显示区域宽高相等
+            childAspectRatio: 1.0, //顯示區域長寬相等
           ),
           itemCount: textList.length,
           itemBuilder: (BuildContext context, int index) {
+            //偵測手勢
             return GestureDetector(
               onTap: () {
                 gvIndex(index);
               },
+              //九宮格
               child: Container(
                 decoration: BoxDecoration(
                     border: Border.all(width: 2, color: Colors.brown),
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10.0), //
-                    )),
+                    )
+                ),
                 child: Center(
                   child: Text(
                     textList[index],
@@ -111,12 +109,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  //顯示贏家
   Widget _whoWin() {
     return Expanded(
       child: Center(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center, //Center Row contents horizontally,
-          crossAxisAlignment: CrossAxisAlignment.center, //Center Row contents vertically,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
             children: [
           const Text(
             "Winner : ",
@@ -131,6 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  //函式：若點選次數為基數: player為「X」，否則為「O」
   Future<bool> whoTurn() async {
     if (countOnTap % 2 == 0) {
       player;
@@ -140,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return player;
   }
 
+  //函式：九宮格
   void gvIndex(int index) {
     setState(() {
       if (textList[index] == "" && player) {
@@ -156,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
     countOnTap += 1;
   }
 
+  //函式：判斷贏家
   Future<String> whoWin() async {
     if (textList[0] == textList[1] && textList[1] == textList[2]) {
       winner = textList[0];
