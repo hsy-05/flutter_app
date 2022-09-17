@@ -2,28 +2,21 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var textList = ["", "", "", "", "", "", "", "", ""];  //九宮格
-  bool player = true;   //player「O」=true , player「X」=false
-  int countOnTap = 0;   //計算點選次數
-  String winner = "";   //贏家
+  var textList = ["", "", "", "", "", "", "", "", ""]; //九宮格
+  bool player = true; //player「O」=true , player「X」=false
+  int countOnTap = 0; //計算點選次數
+  String winner = ""; //贏家
+  bool isWinner = true; //true 有贏家，false 平手
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +34,13 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: const Icon(Icons.settings_backup_restore),
               onPressed: () {
                 setState(() {
-                  textList = ["", "", "", "", "", "", "", "", ""];
-                  winner = "";
+                  clearGV();
                 });
               },
-            )
+            ),
           ]),
       body: Column(
-        children: <Widget>[
-          _turnTo(),
-          _ticTacToe(),
-          _whoWin()],
+        children: <Widget>[_turnTo(), _ticTacToe(), _whoWin()],
       ),
     );
   }
@@ -84,7 +73,9 @@ class _MyHomePageState extends State<MyHomePage> {
             //偵測手勢
             return GestureDetector(
               onTap: () {
-                gvIndex(index);
+                if (textList[index] == "") {
+                  gvIndex(index);
+                }
               },
               //九宮格
               child: Container(
@@ -92,8 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     border: Border.all(width: 2, color: Colors.brown),
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10.0), //
-                    )
-                ),
+                    )),
                 child: Center(
                   child: Text(
                     textList[index],
@@ -114,67 +104,124 @@ class _MyHomePageState extends State<MyHomePage> {
     return Expanded(
       child: Center(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-          const Text(
-            "Winner : ",
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            winner,
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
-        ]),
+              const Text(
+                "Winner : ",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                winner,
+                style:
+                    const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+            ]),
       ),
     );
-  }
-
-  //函式：若點選次數為基數: player為「X」，否則為「O」
-  Future<bool> whoTurn() async {
-    if (countOnTap % 2 == 0) {
-      player;
-    } else if (countOnTap % 2 != 0) {
-      !player;
-    }
-    return player;
   }
 
   //函式：九宮格
   void gvIndex(int index) {
     setState(() {
-      if (textList[index] == "" && player) {
-        textList[index] = "O";
-      } else if (textList[index] == "" && !player) {
-        textList[index] = "X";
+      if (textList[index].isEmpty) {
+        if (player) {
+          textList[index] = "O";
+        }
+        if (!player) {
+          textList[index] = "X";
+        }
+        countOnTap += 1;
       }
+
       whoWin();
+
+      if (!isWinner) {
+        isWinner = !isWinner;
+      }
     });
-    if (winner != "") {
-      textList = ["", "", "", "", "", "", "", "", ""];
-    }
+
     player = !player;
-    countOnTap += 1;
+
+    log('Tap: $countOnTap');
   }
 
   //函式：判斷贏家
-  Future<String> whoWin() async {
-    if (textList[0] == textList[1] && textList[1] == textList[2]) {
+  void whoWin() {
+    //橫
+    if (textList[0] == textList[1] && textList[1] == textList[2] && textList[0].isNotEmpty) {
       winner = textList[0];
     }
-    if (textList[3] == textList[4] && textList[4] == textList[5]) {
+    if (textList[3] == textList[4] && textList[4] == textList[5] && textList[3].isNotEmpty) {
       winner = textList[3];
     }
-    if (textList[6] == textList[7] && textList[7] == textList[8]) {
+    if (textList[6] == textList[7] && textList[7] == textList[8] && textList[6].isNotEmpty) {
       winner = textList[6];
     }
-    if (textList[0] == textList[4] && textList[4] == textList[8]) {
+
+    //斜
+    if (textList[0] == textList[4] &&
+        textList[4] == textList[8] &&
+        textList[0].isNotEmpty) {
       winner = textList[0];
     }
-    if (textList[2] == textList[4] && textList[4] == textList[6]) {
+    if (textList[2] == textList[4] &&
+        textList[4] == textList[6] &&
+        textList[2].isNotEmpty) {
       winner = textList[2];
     }
-    log('whoWin: $winner');
-    return winner;
+
+    //直
+    if (textList[0] == textList[3] &&
+        textList[3] == textList[6] &&
+        textList[0].isNotEmpty) {
+      winner = textList[0];
+    }
+    if (textList[1] == textList[4] &&
+        textList[4] == textList[7] &&
+        textList[1].isNotEmpty) {
+      winner = textList[1];
+    }
+    if (textList[2] == textList[5] &&
+        textList[5] == textList[8] &&
+        textList[2].isNotEmpty) {
+      winner = textList[2];
+    }
+
+    if (countOnTap == 9 && winner == "") {
+      winner = " Tie ";
+      isWinner = !isWinner;
+    }
+
+    if (winner != "") {
+      showWinnerToast();
+    }
+
+    log('Who Win: $winner');
+    log('判斷: $isWinner');
+  }
+
+  //函式：清除紀錄
+  void clearGV() {
+    for (int i = 0; i <= 8; i++) {
+      textList[i] = "";
+      winner = "";
+      countOnTap = 0;
+    }
+
+    log('clear！');
+  }
+
+  // 提示框
+  void showWinnerToast() {
+    Fluttertoast.showToast(
+        msg: isWinner ? "$winner 贏了！" : "平手",
+        toastLength: Toast.LENGTH_SHORT,  //顯示時間長短
+        gravity: ToastGravity.CENTER,     //顯示位置
+        timeInSecForIosWeb: 1,            //顯示秒數
+        backgroundColor: const Color.fromRGBO(174, 158, 143, 1),  //背景
+        textColor: Colors.black,
+        fontSize: 16.0);
+    clearGV();
   }
 }
