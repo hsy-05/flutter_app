@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/random.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -38,9 +39,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               },
             ),
+            //亂樹頁面
+            IconButton(
+              icon: const Icon(Icons.add_circle_rounded),
+              onPressed: () {
+                setState(() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RandomHomePage()),
+                  );
+
+                });
+              },
+            ),
           ]),
       body: Column(
-        children: <Widget>[_turnTo(), _ticTacToe(), _whoWin()],
+        children: <Widget>[_turnTo(), _ticTacToe()],
       ),
     );
   }
@@ -60,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //顯示九宮格
   Widget _ticTacToe() {
     return Expanded(
-      flex: 3,
+      flex: 2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(
@@ -95,28 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  //顯示贏家
-  Widget _whoWin() {
-    return Expanded(
-      child: Center(
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                "Winner : ",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                winner,
-                style:
-                    const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-            ]),
       ),
     );
   }
